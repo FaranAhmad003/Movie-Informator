@@ -1,24 +1,13 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
+import Link from "next/link";
 import MovieCard from "../components/MovieCard";
 import styles from "../styles/Home.module.css";
-import Link from "next/link";
 
-export default function Home() {
-  const [data, setData] = useState(null);
-  const router = useRouter();
-
-  useEffect(() => {
-    fetch("/data.json")
-      .then((res) => res.json())
-      .then((json) => setData(json));
-  }, []);
-
+export default function Home({ movies, genres, directors }) {
   const getGenreName = (id) =>
-    data?.genres.find((g) => g.id === id)?.name || "Unknown Genre";
+    genres.find((g) => g.id === id)?.name || "Unknown Genre";
 
   const getDirectorName = (id) =>
-    data?.directors.find((d) => d.id === id)?.name || "Unknown Director";
+    directors.find((d) => d.id === id)?.name || "Unknown Director";
 
   return (
     <div className={styles.container}>
@@ -26,15 +15,20 @@ export default function Home() {
 
       <button
         className={styles.browseButton}
-        onClick={() => router.push("/genres")}>
+        onClick={() => (window.location.href = "/genres")}>
         Browse Genres
       </button>
+      <button
+        className={styles.browseButton}
+        onClick={() => (window.location.href = "/directors")}>
+        Directors
+      </button>
 
-      {!data ? (
+      {!movies ? (
         <p className={styles.loading}>Loading movies...</p>
       ) : (
         <div className={styles.grid}>
-          {data.movies.map((movie) => (
+          {movies.map((movie) => (
             <Link
               key={movie.id}
               href={`/movies/${movie.id}`}
@@ -53,4 +47,17 @@ export default function Home() {
       )}
     </div>
   );
+}
+
+export async function getStaticProps() {
+  const data = await import("../public/data.json"); 
+
+  return {
+    props: {
+      movies: data.movies,
+      genres: data.genres,
+      directors: data.directors,
+    },
+    revalidate: 10,
+  };
 }

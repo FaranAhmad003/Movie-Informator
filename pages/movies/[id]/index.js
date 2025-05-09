@@ -9,12 +9,16 @@ export async function getStaticPaths() {
 
   return {
     paths,
-    fallback: false,
+    fallback: "blocking",
   };
 }
 
 export async function getStaticProps({ params }) {
   const movie = data.movies.find((m) => m.id === params.id);
+  if (!movie) {
+    return { notFound: true };
+  }
+
   const genre = data.genres.find((g) => g.id === movie.genreId);
   const director = data.directors.find((d) => d.id === movie.directorId);
 
@@ -24,6 +28,7 @@ export async function getStaticProps({ params }) {
       genreName: genre?.name || "Unknown",
       directorName: director?.name || "Unknown",
     },
+    revalidate: 10, 
   };
 }
 
