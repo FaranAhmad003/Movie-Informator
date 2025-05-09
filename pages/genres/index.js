@@ -17,16 +17,29 @@ export default function GenresPage({ genres }) {
 }
 
 export async function getStaticProps() {
-  const data = await import("../../public/data.json");
+  try {
+    // Fetch genres from the API endpoint
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000"}/api/genres`
+    );
+    const genres = await response.json();
 
-  return {
-    props: {
-      genres: data.genres || [],
-    },
-    revalidate: 10,
-  };
+    return {
+      props: {
+        genres: genres || [],
+      },
+      revalidate: 10,
+    };
+  } catch (error) {
+    console.error("Error fetching genres:", error);
+    return {
+      props: {
+        genres: [],
+      },
+      revalidate: 10,
+    };
+  }
 }
-
 
 const containerStyle = {
   minHeight: "100vh",
