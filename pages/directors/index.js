@@ -11,11 +11,7 @@ export default function DirectorsPage({ directors }) {
           <div key={director.id} style={styles.card}>
             <h2 style={styles.name}>{director.name}</h2>
             <p style={styles.bio}>{director.biography}</p>
-            <Link
-              href={`/directors/${director.id}`}
-              style={styles.viewMoreLink}>
-              View Movies →
-            </Link>
+            
           </div>
         ))}
       </div>
